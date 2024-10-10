@@ -265,7 +265,7 @@ const atualizarDashboard = async () => {
   const lucroLiquido = somarArrays(faturamentoTotal, faturamentoClientes)
   series3.value = [{ name: 'Lucro do Revendedor', data: lucroLiquido }]
   
-  const desempenhoPorProduto = [10.76, 0.07, 52.47, 0.78, 26.94, 8.98]
+  const desempenhoPorProduto = [52.47, 0.07, 26.94, 10.76, 8.98, 0.78]
   series4.value = desempenhoPorProduto
 
   valorTotal.value = `R$ ${faturamentoTotal.reduce((acumulador, numero) => acumulador + numero, 0).toLocaleString()}`
