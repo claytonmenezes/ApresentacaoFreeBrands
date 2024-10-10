@@ -251,7 +251,21 @@ const somarArrays = (array1, array2) => {
   }
   return resultado
 }
+const carregarDesempenho = async () => {
+  const { data, error } = await supabase.from('shell_in').select('produto_id, quantidade')
+  if (error) {
+    console.error('Erro ao carregar desempenho:', error)
+    return
+  }
 
+  const desempenhoPorProduto = data.reduce((acc, cur) => {
+    acc[cur.produto_id] = (acc[cur.produto_id] || 0) + cur.quantidade
+    return acc
+  }, {})
+
+  // Atualizando os valores da série com os dados reais
+  return Object.values(desempenhoPorProduto)
+}
 const atualizarDashboard = async () => {
   const entradas = await listarEntradas()
   const faturamentoTotal = sumByMonthEntrada(entradas)
@@ -265,8 +279,7 @@ const atualizarDashboard = async () => {
   const lucroLiquido = somarArrays(faturamentoTotal, faturamentoClientes)
   series3.value = [{ name: 'Lucro do Revendedor', data: lucroLiquido }]
   
-  const desempenhoPorProduto = [52.47, 0.07, 26.94, 10.76, 8.98, 0.78]
-  series4.value = desempenhoPorProduto
+  series4.value = await carregarDesempenho()
 
   valorTotal.value = `R$ ${faturamentoTotal.reduce((acumulador, numero) => acumulador + numero, 0).toLocaleString()}`
 }
