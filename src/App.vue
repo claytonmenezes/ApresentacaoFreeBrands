@@ -12,7 +12,7 @@
         <div class="bg-white shadow-md rounded-lg p-6" ref="faturamentoTotal">
           <h3 class="text-lg font-medium text-gray-800 flex justify-between items-center">
             Faturamento mês
-            <Dialog @close="closeFullscreen">
+            <Dialog>
               <DialogTrigger as-child>
                 <Button variant="ghost">🖥️</Button>
               </DialogTrigger>
@@ -32,7 +32,7 @@
         <div class="bg-white shadow-md rounded-lg p-6" ref="faturamentoClientes">
           <h3 class="text-lg font-medium text-gray-800 flex justify-between items-center">
             Faturamento clientes mês
-            <Dialog @close="closeFullscreen">
+            <Dialog>
               <DialogTrigger as-child>
                 <Button variant="ghost">🖥️</Button>
               </DialogTrigger>
@@ -52,7 +52,7 @@
         <div class="bg-white shadow-md rounded-lg p-6" ref="lucroLiquido">
           <h3 class="text-lg font-medium text-gray-800 flex justify-between items-center">
             Lucro revendedor mês
-            <Dialog @close="closeFullscreen">
+            <Dialog>
               <DialogTrigger as-child>
                 <Button variant="ghost">🖥️</Button>
               </DialogTrigger>
@@ -72,7 +72,7 @@
         <div class="bg-white shadow-md rounded-lg p-6" ref="desempenhoProduto">
           <h3 class="text-lg font-medium text-gray-800 flex justify-between items-center">
             Desempenho por produto
-            <Dialog @close="closeFullscreen">
+            <Dialog>
               <DialogTrigger as-child>
                 <Button variant="ghost">🖥️</Button>
               </DialogTrigger>
@@ -92,7 +92,7 @@
         <div class="bg-white shadow-md rounded-lg p-6" ref="vendasRegiao">
           <h3 class="text-lg font-medium text-gray-800 flex justify-between items-center">
             Total Vendido
-            <Dialog @close="closeFullscreen">
+            <Dialog>
               <DialogTrigger as-child>
                 <Button variant="ghost">🖥️</Button>
               </DialogTrigger>
@@ -114,26 +114,22 @@
         <div class="bg-white shadow-md rounded-lg p-6" ref="lucratividadeEstado">
           <h3 class="text-lg font-medium text-gray-800 flex justify-between items-center">
             Lucratividade por Estado
-            <Dialog @close="closeFullscreen">
+            <Dialog>
               <DialogTrigger as-child>
-                <Button variant="ghost">🖥️</Button>
+                <Button variant="ghost" @clik="teste">🖥️</Button>
               </DialogTrigger>
               <DialogContent class="h-full text-center max-w-none p-0 m-0 bg-white">
                 <div class="p-6">
                   <h3 class="text-xl font-bold mb-4">Lucratividade por Estado</h3>
                   <div class="mt-4 bg-gray-100 rounded flex items-center justify-center text-8xl">
-                    <GoogleMap api-key="AIzaSyA2lwmdVgbKneAtI9fE-uX8IBnq-Z398SM" style="width: 100%; height: 500px" :center="center" :zoom="4" >
-                      <Marker :options="{ position: center }" />
-                    </GoogleMap>
+                    <div id="map" ref="mapContainer" class="map-container"></div>
                   </div>
                 </div>
               </DialogContent>
             </Dialog>
           </h3>
           <div class="mt-4 bg-gray-100 rounded flex items-center justify-center">
-            <GoogleMap api-key="AIzaSyA2lwmdVgbKneAtI9fE-uX8IBnq-Z398SM" style="width: 100%; height: 500px" :center="center" :zoom="4" >
-              <Marker :options="{ position: center }" />
-            </GoogleMap>
+            <div id="map" ref="mapContainer" class="map-container"></div>
           </div>
         </div>
       </div>
@@ -146,9 +142,9 @@ import { ref, onMounted } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
 import { supabase, listarEntradas, listarSaida } from '@/lib/supabase'
-import { GoogleMap, Marker } from 'vue3-google-map'
+import maplibregl from 'maplibre-gl'
 
-const center = { lat: -9.82527513205756, lng: -55.00238142638493 }
+const mapContainer = ref(null)
 const series1 = ref([])
 const series2 = ref([])
 const series3 = ref([])
@@ -283,10 +279,110 @@ const atualizarDashboard = async () => {
 
   valorTotal.value = `R$ ${faturamentoTotal.reduce((acumulador, numero) => acumulador + numero, 0).toLocaleString()}`
 }
+const teste = () => {
+  const map = new maplibregl.Map({
+    container: 'map',
+    style: 'https://api.maptiler.com/maps/streets/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',  // Estilo de mapa
+    center: [-51.9253, -14.2350],  // Coordenadas centrais do Brasil
+    zoom: 3  // Nível de zoom inicial
+  });
 
+  map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+  // Substitua a URL por um arquivo GeoJSON que contenha os estados do Brasil
+  map.on('load', () => {
+      // Fonte com os estados do Brasil em GeoJSON
+      map.addSource('brazil-states', {
+          'type': 'geojson',
+          'data': 'https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson'
+      });
+
+      // Adicionando a camada com os estados do Brasil
+      map.addLayer({
+          'id': 'brazil-states-layer',
+          'type': 'fill',
+          'source': 'brazil-states',
+          'paint': {
+              'fill-color': 'rgba(0, 150, 255, 0.4)',  // Cor de preenchimento dos estados
+              'fill-outline-color': 'rgba(0, 150, 255, 1)'  // Cor da borda dos estados
+          }
+      });
+
+      // Quando clicar em um estado, abre um popup com o nome do estado
+      map.on('click', 'brazil-states-layer', (e) => {
+          new maplibregl.Popup()
+              .setLngLat(e.lngLat)
+              .setHTML(e.features[0].properties.name)  // Propriedade 'name' contém o nome do estado
+              .addTo(map);
+      });
+
+      // Muda o cursor para 'pointer' quando o mouse passa sobre um estado
+      map.on('mouseenter', 'brazil-states-layer', () => {
+          map.getCanvas().style.cursor = 'pointer';
+      });
+
+      // Volta o cursor ao normal quando o mouse sai do estado
+      map.on('mouseleave', 'brazil-states-layer', () => {
+          map.getCanvas().style.cursor = '';
+      });
+  });
+}
 onMounted(async () => {
+  const map = new maplibregl.Map({
+    container: 'map',
+    style: 'https://api.maptiler.com/maps/streets/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',  // Estilo de mapa
+    center: [-51.9253, -14.2350],  // Coordenadas centrais do Brasil
+    zoom: 3  // Nível de zoom inicial
+  });
+
+  map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+  // Substitua a URL por um arquivo GeoJSON que contenha os estados do Brasil
+  map.on('load', () => {
+      // Fonte com os estados do Brasil em GeoJSON
+      map.addSource('brazil-states', {
+          'type': 'geojson',
+          'data': 'https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson'
+      });
+
+      // Adicionando a camada com os estados do Brasil
+      map.addLayer({
+          'id': 'brazil-states-layer',
+          'type': 'fill',
+          'source': 'brazil-states',
+          'paint': {
+              'fill-color': 'rgba(0, 150, 255, 0.4)',  // Cor de preenchimento dos estados
+              'fill-outline-color': 'rgba(0, 150, 255, 1)'  // Cor da borda dos estados
+          }
+      });
+
+      // Quando clicar em um estado, abre um popup com o nome do estado
+      map.on('click', 'brazil-states-layer', (e) => {
+          new maplibregl.Popup()
+              .setLngLat(e.lngLat)
+              .setHTML(e.features[0].properties.name)  // Propriedade 'name' contém o nome do estado
+              .addTo(map);
+      });
+
+      // Muda o cursor para 'pointer' quando o mouse passa sobre um estado
+      map.on('mouseenter', 'brazil-states-layer', () => {
+          map.getCanvas().style.cursor = 'pointer';
+      });
+
+      // Volta o cursor ao normal quando o mouse sai do estado
+      map.on('mouseleave', 'brazil-states-layer', () => {
+          map.getCanvas().style.cursor = '';
+      });
+  });
+
   supabase.channel('atualizacoes').on('postgres_changes', { event: '*', schema: 'public' }, atualizarDashboard).subscribe()
   await atualizarDashboard()
 })
 </script>
 
+<style scoped>
+.map-container {
+  width: 100%;
+  height: 500px; /* Ajuste a altura como necessário */
+}
+</style>
