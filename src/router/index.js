@@ -1,23 +1,34 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomePage from '@/views/HomePage.vue'  // Página atual
-import App2 from '@/App2.vue'  // Página antiga
-
-const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: HomePage
-  },
-  {
-    path: '/app2',
-    name: 'App2',
-    component: App2
-  }
-]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes
+  history: createWebHistory(process.env.VITE_BASE_URL),
+  routes: []
 })
 
-export default router
+const fetchDynamicRoutes = async () => {
+  try {
+    const childrens = []
+    const listMenu = [
+      { link: 'Inicio', titulo: 'Inicio', componente: 'Inicio' },
+      { link: 'Dashboard', titulo: 'Dashboard', componente: 'Dashboard' }
+    ]
+    for (const menu of listMenu) {
+      childrens.push({
+        path: menu.link,
+        name: menu.titulo,
+        component: () => import(`@/pages/${menu.componente}.vue`)
+      })
+    }
+    router.addRoute({ path: '/', component: () => import('@/layouts/MainLayout.vue'), meta: { requiresAuth: true }, children: childrens })
+    router.addRoute({ name: 'login', path: '/login', component: () => import('@/pages/Login.vue') })
+    router.addRoute({ name: 'erro', path: '/:catchAll()', component: () => import('@/pages/ErrorNotFound.vue') })
+  } catch (error) {
+    console.error('Erro ao buscar rotas dinâmicas:', error);
+  }
+}
+
+export {
+  router,
+  fetchDynamicRoutes
+}
+

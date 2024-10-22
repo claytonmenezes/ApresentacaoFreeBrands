@@ -1,9 +1,11 @@
 import { createApp } from 'vue'
-import App from './App.vue'
-import './assets/index.css'
-import VueApexCharts from "vue3-apexcharts"
-import 'maplibre-gl/dist/maplibre-gl.css'
+import App from '@/App.vue'
+import { router, fetchDynamicRoutes } from '@/router'
+import '@/assets/index.css'
 
-const app = createApp(App)
-app.use(VueApexCharts)
-app.mount('#app')
+async function initApp() {
+  await fetchDynamicRoutes()
+  createApp(App).use(router).mount('#app')
+}
+
+initApp()
