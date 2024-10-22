@@ -1,6 +1,6 @@
 <template>
   <div class="p-10">
-    <router-link to="/">
+    <router-link to="/" @click="handleClick(menu)">
       <img src="/logo.svg" />
     </router-link>
   </div>
