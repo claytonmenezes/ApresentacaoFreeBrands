@@ -1,6 +1,6 @@
 <template>
   <Sidebar :notificacoes="notificacoes">
-    <router-view class="px-32 py-4"/>
+    <router-view/>
   </Sidebar>
 </template>
 

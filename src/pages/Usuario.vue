@@ -1,6 +1,6 @@
 <template>
   <div>
-    inicio
+    usuário
   </div>
 </template>
   

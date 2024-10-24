@@ -9,8 +9,10 @@ const fetchDynamicRoutes = async () => {
   try {
     const childrens = []
     const listMenu = [
-      { link: 'Inicio', titulo: 'Inicio', componente: 'Inicio' },
-      { link: 'Dashboard', titulo: 'Dashboard', componente: 'Dashboard' }
+      { link: 'Dashboard', titulo: 'Dashboard', componente: 'Dashboard' },
+      { link: 'Usuario', titulo: 'Usuario', componente: 'Usuario', },
+      { link: 'Perfil', titulo: 'Perfil', componente: 'Perfil', },
+      { link: 'Automacao', titulo: 'Automação', componente: 'Automacao', }
     ]
     for (const menu of listMenu) {
       childrens.push({
