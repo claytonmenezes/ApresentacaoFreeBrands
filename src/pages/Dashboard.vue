@@ -196,6 +196,7 @@ const optionsBarHorizontal = ref({
       [41.1, 21212, 'Vedika']
     ]
   },
+  grid: { containLabel: true },
   xAxis: { name: 'Qtde' },
   yAxis: { type: 'category' },
   visualMap: {
