@@ -1,40 +1,40 @@
 <template>
   <div class="grid grid-cols-12 gap-6 p-10">
-    <Card class="2xl:col-span-4 lg:col-span-6 sm:col-span-12 col-span-12">
+    <Card class="2xl:col-span-4 lg:col-span-6 sm:col-span-12 col-span-12" v-if="usuario.nomeUsuario === 'admin' || usuario.nomeUsuario === 'gerente'">
       <CardHeader>
         <CardTitle>Faturamento 2023/2024</CardTitle>
       </CardHeader>
-      <VChart :option="optionsBar" class="chart" />
+      <VChart :option="optionsBar" class="chart" ref="chartBar" />
     </Card>
-    <Card class="2xl:col-span-4 lg:col-span-6 sm:col-span-12 col-span-12">
+    <Card class="2xl:col-span-4 lg:col-span-6 sm:col-span-12 col-span-12" v-if="usuario.nomeUsuario === 'admin'">
       <CardHeader>
         <CardTitle>Vendas por Produto</CardTitle>
       </CardHeader>
-      <VChart :option="optionsDonut" class="chart" />
+      <VChart :option="optionsDonut" class="chart" ref="chartDonut" />
     </Card>
-    <Card class="2xl:col-span-4 lg:col-span-6 sm:col-span-12 col-span-12">
+    <Card class="2xl:col-span-4 lg:col-span-6 sm:col-span-12 col-span-12" v-if="usuario.nomeUsuario === 'admin' || usuario.nomeUsuario === 'gerente'">
       <CardHeader>
         <CardTitle>Crescimento de Vendas</CardTitle>
       </CardHeader>
-      <VChart :option="optionsLine" class="chart" />
+      <VChart :option="optionsLine" class="chart" ref="chartLine" />
     </Card>
-    <Card class="2xl:col-span-4 lg:col-span-6 sm:col-span-12 col-span-12">
+    <Card class="2xl:col-span-4 lg:col-span-6 sm:col-span-12 col-span-12" v-if="usuario.nomeUsuario === 'admin' || usuario.nomeUsuario === 'gerente'">
       <CardHeader>
         <CardTitle>Top Clientes (em mil)</CardTitle>
       </CardHeader>
-      <VChart :option="optionsVerticalBar" class="chart" />
+      <VChart :option="optionsVerticalBar" class="chart" ref="chartVerticalBar" />
     </Card>
-    <Card class="2xl:col-span-4 lg:col-span-6 sm:col-span-12 col-span-12">
+    <Card class="2xl:col-span-4 lg:col-span-6 sm:col-span-12 col-span-12" v-if="usuario.nomeUsuario === 'admin' || usuario.nomeUsuario === 'gerente'">
       <CardHeader>
         <CardTitle>Vendas entre Produtos</CardTitle>
       </CardHeader>
-      <VChart :option="optionsRadar" class="chart" />
+      <VChart :option="optionsRadar" class="chart" ref="chartRadar" />
     </Card>
-    <Card class="2xl:col-span-4 lg:col-span-6 sm:col-span-12 col-span-12">
+    <Card class="2xl:col-span-4 lg:col-span-6 sm:col-span-12 col-span-12" v-if="usuario.nomeUsuario === 'admin'">
       <CardHeader>
         <CardTitle>Vendas entre Produtos</CardTitle>
       </CardHeader>
-      <VChart :option="optionsBarHorizontal" class="chart" />
+      <VChart :option="optionsBarHorizontal" class="chart" ref="chartBarHorizontal" />
     </Card>
   </div>
 </template>
@@ -44,13 +44,10 @@ import 'echarts'
 import VChart, { THEME_KEY, INIT_OPTIONS_KEY } from 'vue-echarts'
 import { ref, provide } from 'vue'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
+import { usuario } from '@/lib/store'
 
-provide(THEME_KEY, {
-  value: ''
-})
-provide(INIT_OPTIONS_KEY, {
-  renderer: 'svg'
-})
+provide(THEME_KEY, { value: '' })
+provide(INIT_OPTIONS_KEY, { renderer: 'svg' })
 
 const optionsBar = ref({
   tooltip: {
@@ -219,6 +216,22 @@ const optionsBarHorizontal = ref({
       }
     }
   ]
+})
+
+const chartBar = ref()
+const chartDonut = ref()
+const chartLine = ref()
+const chartVerticalBar = ref()
+const chartRadar = ref()
+const chartBarHorizontal = ref()
+
+window.addEventListener('resize', () => {
+  chartBar.value.resize()
+  chartDonut.value.resize()
+  chartLine.value.resize()
+  chartVerticalBar.value.resize()
+  chartRadar.value.resize()
+  chartBarHorizontal.value.resize()
 })
 </script>
 
