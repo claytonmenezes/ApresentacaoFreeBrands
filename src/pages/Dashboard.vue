@@ -226,12 +226,19 @@ const chartRadar = ref()
 const chartBarHorizontal = ref()
 
 window.addEventListener('resize', () => {
-  chartBar.value.resize()
-  chartDonut.value.resize()
-  chartLine.value.resize()
-  chartVerticalBar.value.resize()
-  chartRadar.value.resize()
-  chartBarHorizontal.value.resize()
+  if (usuario.value.nomeUsuario === 'admin') {
+    chartBar.value.resize()
+    chartDonut.value.resize()
+    chartLine.value.resize()
+    chartVerticalBar.value.resize()
+    chartRadar.value.resize()
+    chartBarHorizontal.value.resize()
+  } else {
+    chartBar.value.resize()
+    chartLine.value.resize()
+    chartVerticalBar.value.resize()
+    chartRadar.value.resize()
+  }
 })
 </script>
 
