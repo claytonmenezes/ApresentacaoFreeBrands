@@ -46,7 +46,7 @@
             Configurações
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Logout</DropdownMenuItem>
+          <DropdownMenuItem @click="deslogar">Logout</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
@@ -86,6 +86,7 @@ import { Icon } from '@iconify/vue'
 import SidebarItems from '@/components/SidebarItems.vue'
 import { router } from '@/router'
 import { useDark } from '@vueuse/core'
+import { usuario } from '@/lib/store'
 
 const props = defineProps({
   notificacoes: {
@@ -100,6 +101,11 @@ const abrirDialogConfig = () => {
 }
 const fecharDialogConfig = () => {
   dialogConfig.value = false
+}
+
+const deslogar = () => {
+  usuario.value = {}
+  router.push('/login')
 }
 
 const mode = useDark()

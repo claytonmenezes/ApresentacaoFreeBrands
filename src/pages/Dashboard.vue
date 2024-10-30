@@ -2,40 +2,67 @@
   <div class="grid grid-cols-12 gap-6 p-10">
     <Card class="2xl:col-span-4 lg:col-span-6 sm:col-span-12 col-span-12" v-if="usuario.nomeUsuario === 'admin' || usuario.nomeUsuario === 'gerente'">
       <CardHeader>
-        <CardTitle>Faturamento 2023/2024</CardTitle>
+        <CardTitle class="flex justify-between">
+          <div> Faturamento 2023/2024 </div>
+          <Fullscreen style="cursor: pointer;" @click="abrirDialogTelaCheia('Faturamento 2023/2024', optionsBar, chartBar)"/>
+        </CardTitle>
       </CardHeader>
-      <VChart :option="optionsBar" class="chart" ref="chartBar" />
+      <VChart :option="optionsBar" class="chart" autoresize ref="chartBar" />
     </Card>
     <Card class="2xl:col-span-4 lg:col-span-6 sm:col-span-12 col-span-12" v-if="usuario.nomeUsuario === 'admin'">
       <CardHeader>
-        <CardTitle>Vendas por Produto</CardTitle>
+        <CardTitle class="flex justify-between">
+          <div> Vendas por Produto </div>
+          <Fullscreen style="cursor: pointer;" @click="abrirDialogTelaCheia('Vendas por Produto', optionsDonut)"/>
+        </CardTitle>
       </CardHeader>
-      <VChart :option="optionsDonut" class="chart" ref="chartDonut" />
+      <VChart :option="optionsDonut" class="chart" autoresize />
     </Card>
     <Card class="2xl:col-span-4 lg:col-span-6 sm:col-span-12 col-span-12" v-if="usuario.nomeUsuario === 'admin' || usuario.nomeUsuario === 'gerente'">
       <CardHeader>
-        <CardTitle>Crescimento de Vendas</CardTitle>
+        <CardTitle class="flex justify-between">
+          <div> Crescimento de Vendas </div>
+          <Fullscreen style="cursor: pointer;" @click="abrirDialogTelaCheia('Crescimento de Vendas', optionsLine)"/>
+        </CardTitle>
       </CardHeader>
-      <VChart :option="optionsLine" class="chart" ref="chartLine" />
+      <VChart :option="optionsLine" class="chart" autoresize />
     </Card>
     <Card class="2xl:col-span-4 lg:col-span-6 sm:col-span-12 col-span-12" v-if="usuario.nomeUsuario === 'admin' || usuario.nomeUsuario === 'gerente'">
       <CardHeader>
-        <CardTitle>Top Clientes (em mil)</CardTitle>
+        <CardTitle class="flex justify-between">
+          <div> Top Clientes (em mil) </div>
+          <Fullscreen style="cursor: pointer;" @click="abrirDialogTelaCheia('Top Clientes (em mil)', optionsVerticalBar)"/>
+        </CardTitle>
       </CardHeader>
-      <VChart :option="optionsVerticalBar" class="chart" ref="chartVerticalBar" />
+      <VChart :option="optionsVerticalBar" class="chart" autoresize />
     </Card>
     <Card class="2xl:col-span-4 lg:col-span-6 sm:col-span-12 col-span-12" v-if="usuario.nomeUsuario === 'admin' || usuario.nomeUsuario === 'gerente'">
       <CardHeader>
-        <CardTitle>Vendas entre Produtos</CardTitle>
+        <CardTitle class="flex justify-between">
+          <div> Vendas entre Produtos </div>
+          <Fullscreen style="cursor: pointer;" @click="abrirDialogTelaCheia('Vendas entre Produtos', optionsRadar)"/>
+        </CardTitle>
       </CardHeader>
-      <VChart :option="optionsRadar" class="chart" ref="chartRadar" />
+      <VChart :option="optionsRadar" class="chart" autoresize />
     </Card>
     <Card class="2xl:col-span-4 lg:col-span-6 sm:col-span-12 col-span-12" v-if="usuario.nomeUsuario === 'admin'">
       <CardHeader>
-        <CardTitle>Vendas entre Produtos</CardTitle>
+        <CardTitle class="flex justify-between">
+          <div> Vendas entre Produtos </div>
+          <Fullscreen style="cursor: pointer;" @click="abrirDialogTelaCheia('Vendas entre Produtos', optionsBarHorizontal)"/>
+        </CardTitle>
       </CardHeader>
-      <VChart :option="optionsBarHorizontal" class="chart" ref="chartBarHorizontal" />
+      <VChart :option="optionsBarHorizontal" class="chart" autoresize />
     </Card>
+    <Dialog v-model:open="dialogTelaCheia">
+      <DialogContent class="h-full max-w-full">
+        <DialogHeader>
+          <DialogTitle class="text-6xl text-center">{{ nomeDashboard }}</DialogTitle>
+          <DialogDescription/>
+          <VChart :option="optionsTelaCheia" autoresize />
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>
 
@@ -44,7 +71,9 @@ import 'echarts'
 import VChart, { THEME_KEY, INIT_OPTIONS_KEY } from 'vue-echarts'
 import { ref, provide } from 'vue'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { usuario } from '@/lib/store'
+import { Fullscreen } from 'lucide-vue-next'
 
 provide(THEME_KEY, { value: '' })
 provide(INIT_OPTIONS_KEY, { renderer: 'svg' })
@@ -218,28 +247,17 @@ const optionsBarHorizontal = ref({
   ]
 })
 
-const chartBar = ref()
-const chartDonut = ref()
-const chartLine = ref()
-const chartVerticalBar = ref()
-const chartRadar = ref()
-const chartBarHorizontal = ref()
+const dialogTelaCheia = ref(false)
+const nomeDashboard = ref('')
+const optionsTelaCheia = ref({})
+const chartBar = ref(null)
 
-window.addEventListener('resize', () => {
-  if (usuario.value.nomeUsuario === 'admin') {
-    chartBar.value.resize()
-    chartDonut.value.resize()
-    chartLine.value.resize()
-    chartVerticalBar.value.resize()
-    chartRadar.value.resize()
-    chartBarHorizontal.value.resize()
-  } else {
-    chartBar.value.resize()
-    chartLine.value.resize()
-    chartVerticalBar.value.resize()
-    chartRadar.value.resize()
-  }
-})
+const abrirDialogTelaCheia = (nome, options, chart) => {
+  dialogTelaCheia.value = true
+  nomeDashboard.value = nome
+  optionsTelaCheia.value = options
+  console.log(chartBar)
+}
 </script>
 
 <style scoped>

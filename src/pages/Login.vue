@@ -32,7 +32,6 @@ const nomeUsuario = ref('')
 const senha = ref('')
 
 const login = (nomeUsuario, senha) => {
-  console.log('login', nomeUsuario, senha)
   if ((nomeUsuario === 'admin' || nomeUsuario === 'gerente') && senha === '123456') {
     usuario.value = {
       nomeUsuario,
