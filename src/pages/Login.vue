@@ -32,7 +32,7 @@ const nomeUsuario = ref('')
 const senha = ref('')
 
 const login = (nomeUsuario, senha) => {
-  if ((nomeUsuario === 'admin' || nomeUsuario === 'gerente') && senha === '123456') {
+  if ((nomeUsuario === 'admin' || nomeUsuario === 'gerente' || nomeUsuario === 'vendas') && senha === '123456') {
     usuario.value = {
       nomeUsuario,
       senha
